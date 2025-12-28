@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// Use local backend instead of external API (resolve CORS)
-const API_BASE_URL = '/api';
+// Firebase Cloud Functions backend URL - update after deployment
+// Format: https://region-projectId.cloudfunctions.net
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://us-central1-simpanin.cloudfunctions.net';
 
 export interface DownloadResponse {
   status: boolean;
