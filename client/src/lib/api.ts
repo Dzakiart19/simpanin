@@ -2,18 +2,15 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://api.gimita.id/api';
 
-// CORS proxy jika diperlukan
-const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
-
 export interface DownloadResponse {
   status: boolean;
   message: string;
   data: any;
 }
 
-// Buat axios instance dengan timeout lebih lama
+// Buat axios instance dengan timeout lebih lama untuk API yang slow
 const apiClient = axios.create({
-  timeout: 30000, // 30 detik timeout
+  timeout: 60000, // 60 detik timeout
   headers: {
     'Accept': 'application/json',
   }
@@ -47,6 +44,10 @@ export const api = {
   tiktok: (url: string) => {
     console.log('Fetching TikTok:', url);
     return apiClient.get(`${API_BASE_URL}/downloader/tiktok?url=${encodeURIComponent(url)}`);
+  },
+  instagram: (url: string) => {
+    console.log('Fetching Instagram:', url);
+    return apiClient.get(`${API_BASE_URL}/downloader/instagram?url=${encodeURIComponent(url)}`);
   },
   spotify: (url: string) => {
     console.log('Fetching Spotify:', url);

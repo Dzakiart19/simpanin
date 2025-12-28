@@ -44,13 +44,14 @@ export default function YoutubePage() {
         setResult({
           title: data.title || "YouTube Video",
           thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
-          author: data.author || "Unknown Channel",
+          author: "YouTube",
           duration: data.duration || "",
           downloadUrl: data.download_url || "",
+          quality: data.quality || "720p",
         });
         toast({
-          title: "Berhasil",
-          description: "Data video berhasil diambil",
+          title: "Berhasil ✓",
+          description: `Video siap didownload - ${data.quality || '720p'}`,
         });
       } else {
         throw new Error("Response tidak valid");
@@ -87,7 +88,7 @@ export default function YoutubePage() {
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Contoh: https://youtu.be/dQw4w9WgXcQ" 
+              placeholder="Contoh: https://youtu.be/4Quvr7tcg3M" 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-red-600 focus:ring-red-600/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
@@ -123,7 +124,7 @@ export default function YoutubePage() {
             title={result.title}
             thumbnail={result.thumbnail}
             author={result.author}
-            duration={result.duration}
+            duration={result.quality}
             url={result.downloadUrl}
             type={format === 'mp3' ? 'audio' : 'video'}
             onDownload={() => window.open(result.downloadUrl, '_blank')}

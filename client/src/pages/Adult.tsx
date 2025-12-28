@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function AdultPage() {
   const [url, setUrl] = useState("");
+  const [source, setSource] = useState("xnxx");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -32,27 +33,45 @@ export default function AdultPage() {
     setResult(null);
 
     try {
-      const response = await api.xnxx.download(url);
-      console.log('XNXX Response:', response.data);
+      let response;
+      if (source === 'xnxx') {
+        response = await api.xnxx.download(url);
+      } else {
+        response = await api.pornhub(url);
+      }
+      
+      console.log(`${source.toUpperCase()} Response:`, response.data);
       
       if (response.data?.success && response.data?.data) {
         const data = response.data.data;
-        setResult({
-          title: data.title || "Video",
-          thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1594322436404-5a0526db4d13?w=800&q=80",
-          author: data.uploader || "Unknown",
-          downloadUrl: data.video_url_high || data.video_url_low || "", 
-        });
+        
+        if (source === 'pornhub') {
+          setResult({
+            title: data.title || "PornHub Video",
+            thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1594322436404-5a0526db4d13?w=800&q=80",
+            author: "PornHub",
+            downloadUrl: data.best_quality?.video_url || data.media_qualities?.[0]?.video_url || "",
+            duration: data.duration ? `${data.duration}s` : "",
+          });
+        } else {
+          setResult({
+            title: data.title || "XNXX Video",
+            thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1594322436404-5a0526db4d13?w=800&q=80",
+            author: data.uploader || "Unknown",
+            downloadUrl: data.video_url_high || data.video_url_low || "",
+          });
+        }
+        
         toast({
-          title: "Berhasil",
-          description: "Data video berhasil diambil",
+          title: "Berhasil ✓",
+          description: `Video ${source.toUpperCase()} siap didownload`,
         });
       } else {
         throw new Error("Response tidak valid");
       }
     } catch (error: any) {
-      console.error('XNXX Error:', error);
-      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil video";
+      console.error('Adult Content Error:', error);
+      const errorMsg = error.response?.data?.message || error.message || `Gagal mengambil video ${source.toUpperCase()}`;
       toast({
         title: "Error",
         description: errorMsg,
@@ -107,7 +126,7 @@ export default function AdultPage() {
     setSelectedResult({
       title: item.title || "Video",
       thumbnail: item.thumbnail || "https://images.unsplash.com/photo-1594322436404-5a0526db4d13?w=800&q=80",
-      author: "Unknown",
+      author: item.uploader || "Unknown",
       downloadUrl: item.link || "",
     });
   };
@@ -123,21 +142,43 @@ export default function AdultPage() {
           18+ Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download video pribadi dan pencarian (XNXX, PornHub) - Download dengan cepat dan aman.
+          Download video pribadi dari XNXX dan PornHub - Cepat, Aman, Privasi Terjamin.
         </p>
 
         <Tabs defaultValue="downloader" className="w-full max-w-2xl">
           <TabsList className="grid w-full grid-cols-2 bg-black/50" data-testid="tabs-adult">
             <TabsTrigger value="downloader">Downloader</TabsTrigger>
-            <TabsTrigger value="search">Pencarian</TabsTrigger>
+            <TabsTrigger value="search">Pencarian XNXX</TabsTrigger>
           </TabsList>
           
           <TabsContent value="downloader" className="mt-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Pilih Sumber</label>
+              <div className="flex gap-2">
+                <Button 
+                  variant={source === 'xnxx' ? 'default' : 'outline'}
+                  onClick={() => setSource('xnxx')}
+                  className="flex-1"
+                  data-testid="button-source-xnxx"
+                >
+                  XNXX
+                </Button>
+                <Button 
+                  variant={source === 'pornhub' ? 'default' : 'outline'}
+                  onClick={() => setSource('pornhub')}
+                  className="flex-1"
+                  data-testid="button-source-pornhub"
+                >
+                  PornHub
+                </Button>
+              </div>
+            </div>
+            
             <form onSubmit={handleDownload} className="relative w-full">
               <div className="flex flex-col gap-4 md:flex-row">
                 <Input 
                   type="text" 
-                  placeholder="Contoh: https://www.xnxx.com/video-..." 
+                  placeholder={source === 'pornhub' ? "Contoh: https://www.pornhub.com/view_video.php?..." : "Contoh: https://www.xnxx.com/video-..."} 
                   className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-yellow-500 focus:ring-yellow-500/50"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
@@ -159,6 +200,7 @@ export default function AdultPage() {
                 title={result.title}
                 thumbnail={result.thumbnail}
                 author={result.author}
+                duration={result.duration}
                 url={result.downloadUrl}
                 type="video"
                 onDownload={() => window.open(result.downloadUrl, '_blank')}
@@ -171,7 +213,7 @@ export default function AdultPage() {
               <div className="flex flex-col gap-4 md:flex-row">
                 <Input 
                   type="text" 
-                  placeholder="Cari video..." 
+                  placeholder="Cari video XNXX..." 
                   className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-yellow-500 focus:ring-yellow-500/50"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -204,6 +246,7 @@ export default function AdultPage() {
                           src={item.thumbnail} 
                           alt={item.title}
                           className="w-24 h-24 rounded object-cover"
+                          onError={(e) => {e.currentTarget.src = "https://images.unsplash.com/photo-1594322436404-5a0526db4d13?w=800&q=80"}}
                         />
                         <div className="flex-1">
                           <h3 className="font-bold text-white line-clamp-2">{item.title}</h3>

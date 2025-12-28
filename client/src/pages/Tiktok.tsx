@@ -42,17 +42,18 @@ export default function TiktokPage() {
           author: authorName,
           stats: data.stats || {},
           downloadUrl: videoUrl,
+          views: data.stats?.views || 0,
         });
         toast({
-          title: "Berhasil",
-          description: "Data video TikTok berhasil diambil",
+          title: "Berhasil ✓",
+          description: "Video TikTok siap didownload tanpa watermark",
         });
       } else {
         throw new Error("Response tidak valid: " + JSON.stringify(response.data));
       }
     } catch (error: any) {
       console.error('TikTok Error:', error);
-      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil video TikTok";
+      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil video TikTok. Periksa URL Anda.";
       toast({
         title: "Error",
         description: errorMsg,
@@ -74,7 +75,7 @@ export default function TiktokPage() {
           TikTok Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download video TikTok tanpa watermark dalam kualitas tinggi.
+          Download video TikTok tanpa watermark dalam kualitas tinggi (HD).
         </p>
 
         <form onSubmit={handleDownload} className="relative w-full max-w-2xl">
