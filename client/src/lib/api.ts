@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Firebase Cloud Functions backend URL - update after deployment
-// Format: https://region-projectId.cloudfunctions.net
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://us-central1-simpanin.cloudfunctions.net';
+// Replit backend URL - update with your Replit project URL
+// Format: https://projectname.username.replit.dev
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export interface DownloadResponse {
   status: boolean;
