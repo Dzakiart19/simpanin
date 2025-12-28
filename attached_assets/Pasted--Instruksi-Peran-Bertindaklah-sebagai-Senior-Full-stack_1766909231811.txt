@@ -1,0 +1,81 @@
+
+
+Instruksi Peran:
+Bertindaklah sebagai Senior Full-stack Web Developer dan UI/UX Designer spesialis Modern Web Apps. Saya ingin membangun website media downloader bernama "StreamSave".
+
+Konsep Utama:
+Website ini adalah One-Stop Downloader dengan sistem navigasi kategori. User bisa berpindah antar halaman (YouTube, TikTok, Spotify, dll) melalui menu navigasi tanpa reload (SPA - Single Page Application). Desain harus mengadopsi Netflix Premium UI Style (Gelap, Mewah, dan Responsif).
+
+Teknologi yang Digunakan:
+
+Frontend: React.js atau Next.js (Tailwind CSS).
+
+Icons: Lucide React atau FontAwesome.
+
+State Management: React Hooks (useState, useEffect).
+
+1. Desain UI (Netflix Style):
+
+Color Palette: Background utama #141414, aksen merah Netflix #E50914, teks putih #FFFFFF, dan abu-abu untuk elemen sekunder.
+
+Typography: Menggunakan font Sans-serif yang bersih (seperti Inter atau Montserrat).
+
+Navigation: Sidebar atau Top Navbar yang transparan saat di-scroll, berisi kategori: YouTube, TikTok, Spotify, Social Media, dan Search.
+
+Card Design: Hasil pencarian/download harus muncul dalam bentuk card dengan thumbnail besar, sudut melengkung (rounded), dan efek hover zoom (khas Netflix).
+
+Loading State: Gunakan Shimmer/Skeleton screen ala Netflix saat menunggu respon API.
+
+2. Arsitektur Halaman & Kategori:
+Buat sistem routing yang memungkinkan user memilih:
+
+YouTube Page: Form input URL + Dropdown Resolusi (360, 720, 1080) menggunakan endpoint /ytmp4 dan /ytmp3.
+
+TikTok Page: Fokus pada download video tanpa watermark menggunakan endpoint /tiktok.
+
+Spotify Page: Menampilkan metadata lagu (judul, cover, artist) sebelum download menggunakan endpoint /spotify.
+
+Adult Content Section (XNXX/PornHub): Halaman terpisah dengan fitur search (menggunakan /search/xnxx) dan downloader (menggunakan /downloader/xnxx atau /pornhub).
+
+3. Integrasi API (Gimita API):
+Gunakan https://api.gimita.id/api/ sebagai base URL. Buat fungsi fetch untuk endpoint berikut:
+
+YouTube MP3: /downloader/ytmp3?url={url}
+
+YouTube MP4: /downloader/ytmp4?url={url}&resolution={res}
+
+YouTube Info: /downloader/ytinfo?url={url}
+
+Spotify: /downloader/spotify?url={url}
+
+TikTok: /downloader/tiktok?url={url}
+
+XNXX Downloader: /downloader/xnxx?url={url}
+
+PornHub Downloader: /downloader/pornhub?url={url}
+
+XNXX Search: /search/xnxx?query={query}&page={page}
+
+4. Alur Kerja Aplikasi:
+
+User memilih kategori di sidebar.
+
+User memasukkan link URL ke dalam box input yang elegan di tengah layar (Hero Section).
+
+Saat tombol "Download" (ganti dengan ikon Play/Download ala Netflix) diklik, tampilkan animasi loading.
+
+Tampilkan response API secara visual: Foto thumbnail di kiri, Detail (Judul, Durasi, Author) di kanan, dan tombol "Klik untuk Download" yang mencolok.
+
+5. Penutup & Output:
+Berikan saya kode lengkap untuk:
+
+Struktur Folder.
+
+Komponen Sidebar/Navbar.
+
+Logika Fetch API menggunakan Axios atau Fetch API.
+
+Halaman utama yang dinamis berdasarkan kategori yang dipilih.
+
+Silakan buatkan kodenya sekarang dengan fokus pada estetika premium dan fungsionalitas yang mulus.
+
