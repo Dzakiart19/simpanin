@@ -22,18 +22,30 @@ export default function SpotifyPage() {
     try {
       const response = await api.spotify(url);
       
-      if (response.data) {
-           setResult({
-            title: response.data.title || "Spotify Track",
-            thumbnail: response.data.thumbnail || "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800&q=80",
-            author: response.data.artist || "Artist",
-            url: response.data.download_url || response.data.url, 
-          });
+      if (response.data?.success && response.data?.data) {
+        const data = response.data.data;
+        const metadata = data.metadata || {};
+        const download = data.download || {};
+        
+        setResult({
+          title: metadata.title || "Spotify Track",
+          thumbnail: metadata.cover || "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800&q=80",
+          artist: metadata.artist || "Unknown Artist",
+          album: metadata.album || "Unknown Album",
+          downloadUrl: download.mp3 || "",
+        });
+        toast({
+          title: "Berhasil",
+          description: "Data lagu Spotify berhasil diambil",
+        });
+      } else {
+        throw new Error("Invalid response");
       }
     } catch (error) {
-       toast({
+      console.error(error);
+      toast({
         title: "Error",
-        description: "Failed to fetch Spotify track.",
+        description: "Gagal mengambil lagu Spotify. Periksa URL Anda.",
         variant: "destructive",
       });
     } finally {
@@ -52,19 +64,26 @@ export default function SpotifyPage() {
           Spotify Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download music from Spotify with metadata included.
+          Download musik dari Spotify dengan metadata lengkap.
         </p>
 
         <form onSubmit={handleDownload} className="relative w-full max-w-2xl">
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Paste Spotify URL here..." 
+              placeholder="Paste Spotify URL di sini..." 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-green-500 focus:ring-green-500/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              data-testid="input-spotify-url"
             />
-            <Button type="submit" size="lg" className="h-14 bg-green-600 px-8 text-lg font-bold hover:bg-green-700" disabled={loading}>
+            <Button 
+              type="submit" 
+              size="lg" 
+              className="h-14 bg-green-600 px-8 text-lg font-bold hover:bg-green-700" 
+              disabled={loading}
+              data-testid="button-download-spotify"
+            >
               {loading ? <Loader2 className="animate-spin" /> : "Download"}
             </Button>
           </div>
@@ -74,10 +93,10 @@ export default function SpotifyPage() {
           <ResultCard 
             title={result.title}
             thumbnail={result.thumbnail}
-            author={result.author}
-            url={result.url}
+            author={result.artist}
+            url={result.downloadUrl}
             type="audio"
-            onDownload={() => {}}
+            onDownload={() => window.open(result.downloadUrl, '_blank')}
           />
         )}
       </div>

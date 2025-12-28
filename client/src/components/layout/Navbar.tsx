@@ -26,17 +26,17 @@ export function Navbar() {
       <div className="flex h-16 items-center justify-between px-6">
         {/* Mobile Logo */}
         <div className="md:hidden">
-            <span className="text-xl font-bold tracking-tighter text-primary">
-              STREAM<span className="text-white">SAVE</span>
-            </span>
+          <span className="text-xl font-bold tracking-tighter text-primary" data-testid="text-mobile-logo">
+            STREAM<span className="text-white">SAVE</span>
+          </span>
         </div>
 
         {/* Desktop Nav - Right Side */}
         <div className="hidden md:flex md:items-center md:gap-6 ml-auto">
           <Link href="/">
-            <a className="text-sm font-medium text-gray-300 hover:text-white">Home</a>
+            <a className="text-sm font-medium text-gray-300 hover:text-white" data-testid="link-home-navbar">Home</a>
           </Link>
-          <Button variant="destructive" size="sm" className="bg-primary hover:bg-red-700">
+          <Button variant="destructive" size="sm" className="bg-primary hover:bg-red-700" data-testid="button-signin">
             Sign In
           </Button>
         </div>
@@ -45,6 +45,7 @@ export function Navbar() {
         <button
           className="md:hidden text-white"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          data-testid="button-mobile-menu"
         >
           {isMobileMenuOpen ? <X /> : <Menu />}
         </button>
@@ -54,10 +55,26 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="absolute top-16 left-0 w-full bg-black/95 p-4 md:hidden border-b border-white/10">
           <nav className="flex flex-col gap-4">
-             <Link href="/youtube"><a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>YouTube</a></Link>
-             <Link href="/tiktok"><a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>TikTok</a></Link>
-             <Link href="/spotify"><a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>Spotify</a></Link>
-             <Link href="/adult"><a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>Adult (18+)</a></Link>
+             <Link href="/youtube">
+               <a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)} data-testid="link-youtube-mobile">
+                 YouTube
+               </a>
+             </Link>
+             <Link href="/tiktok">
+               <a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)} data-testid="link-tiktok-mobile">
+                 TikTok
+               </a>
+             </Link>
+             <Link href="/spotify">
+               <a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)} data-testid="link-spotify-mobile">
+                 Spotify
+               </a>
+             </Link>
+             <Link href="/adult">
+               <a className="text-gray-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)} data-testid="link-adult-mobile">
+                 Adult (18+)
+               </a>
+             </Link>
           </nav>
         </div>
       )}

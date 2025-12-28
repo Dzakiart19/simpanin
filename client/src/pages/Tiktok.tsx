@@ -22,18 +22,29 @@ export default function TiktokPage() {
     try {
       const response = await api.tiktok(url);
       
-      if (response.data) {
-           setResult({
-            title: response.data.title || "TikTok Video",
-            thumbnail: response.data.thumbnail || "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&q=80",
-            author: response.data.author || "TikTok User",
-            url: response.data.download_url || response.data.url, 
-          });
+      if (response.data?.success && response.data?.data) {
+        const data = response.data.data;
+        const authorName = data.author?.name || "TikTok User";
+        
+        setResult({
+          title: data.title || "TikTok Video",
+          thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&q=80",
+          author: authorName,
+          stats: data.stats || {},
+          downloadUrl: data.video?.url || "",
+        });
+        toast({
+          title: "Berhasil",
+          description: "Data video TikTok berhasil diambil",
+        });
+      } else {
+        throw new Error("Invalid response");
       }
     } catch (error) {
-       toast({
+      console.error(error);
+      toast({
         title: "Error",
-        description: "Failed to fetch TikTok video.",
+        description: "Gagal mengambil video TikTok. Periksa URL Anda.",
         variant: "destructive",
       });
     } finally {
@@ -52,19 +63,26 @@ export default function TiktokPage() {
           TikTok Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download TikTok videos without watermark.
+          Download video TikTok tanpa watermark.
         </p>
 
         <form onSubmit={handleDownload} className="relative w-full max-w-2xl">
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Paste TikTok URL here..." 
+              placeholder="Paste TikTok URL di sini..." 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-pink-500 focus:ring-pink-500/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              data-testid="input-tiktok-url"
             />
-            <Button type="submit" size="lg" className="h-14 bg-pink-600 px-8 text-lg font-bold hover:bg-pink-700" disabled={loading}>
+            <Button 
+              type="submit" 
+              size="lg" 
+              className="h-14 bg-pink-600 px-8 text-lg font-bold hover:bg-pink-700" 
+              disabled={loading}
+              data-testid="button-download-tiktok"
+            >
               {loading ? <Loader2 className="animate-spin" /> : "Download"}
             </Button>
           </div>
@@ -75,9 +93,9 @@ export default function TiktokPage() {
             title={result.title}
             thumbnail={result.thumbnail}
             author={result.author}
-            url={result.url}
+            url={result.downloadUrl}
             type="video"
-            onDownload={() => {}}
+            onDownload={() => window.open(result.downloadUrl, '_blank')}
           />
         )}
       </div>

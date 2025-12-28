@@ -3,7 +3,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Youtube, Search, Loader2 } from "lucide-react";
+import { Youtube, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { ResultCard } from "@/components/ui/ResultCard";
 import { useToast } from "@/hooks/use-toast";
@@ -23,7 +23,6 @@ export default function YoutubePage() {
     setResult(null);
 
     try {
-      // First get info for better UI, or directly download based on format
       let response;
       if (format === 'mp3') {
         response = await api.youtube.mp3(url);
@@ -31,25 +30,28 @@ export default function YoutubePage() {
         response = await api.youtube.mp4(url);
       }
       
-      console.log(response.data);
-
-      if (response.data) {
-          // Mocking the structure based on typical API responses if raw data is complex
-          // Adjust based on actual Gimita API response structure
-          setResult({
-            title: response.data.title || "YouTube Video",
-            thumbnail: response.data.thumbnail || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
-            author: response.data.author || "Unknown Channel",
-            url: response.data.download_url || response.data.url, // Adjust based on API
-          });
+      if (response.data?.success && response.data?.data) {
+        const data = response.data.data;
+        setResult({
+          title: data.title || "YouTube Video",
+          thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80",
+          author: data.author || "Unknown Channel",
+          duration: data.duration || "",
+          downloadUrl: data.download_url || "",
+        });
+        toast({
+          title: "Berhasil",
+          description: "Data video berhasil diambil",
+        });
       } else {
-        throw new Error("No data returned");
+        throw new Error("Invalid response structure");
       }
 
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
-        description: "Failed to fetch video. Please check the URL.",
+        description: "Gagal mengambil data video. Periksa URL Anda.",
         variant: "destructive",
       });
     } finally {
@@ -68,22 +70,23 @@ export default function YoutubePage() {
           YouTube Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Convert and download YouTube videos in MP4 or MP3 format high quality.
+          Convert dan download video YouTube dalam format MP4 atau MP3 dengan kualitas tinggi.
         </p>
 
         <form onSubmit={handleDownload} className="relative w-full max-w-2xl">
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Paste YouTube URL here..." 
+              placeholder="Paste YouTube URL di sini..." 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-red-600 focus:ring-red-600/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              data-testid="input-youtube-url"
             />
             
             <div className="flex gap-2">
                <Select value={format} onValueChange={setFormat}>
-                <SelectTrigger className="h-14 w-32 border-white/10 bg-black/50 text-white backdrop-blur-md">
+                <SelectTrigger className="h-14 w-32 border-white/10 bg-black/50 text-white backdrop-blur-md" data-testid="select-format">
                   <SelectValue placeholder="Format" />
                 </SelectTrigger>
                 <SelectContent>
@@ -92,8 +95,14 @@ export default function YoutubePage() {
                 </SelectContent>
               </Select>
 
-              <Button type="submit" size="lg" className="h-14 bg-red-600 px-8 text-lg font-bold hover:bg-red-700" disabled={loading}>
-                {loading ? <Loader2 className="animate-spin" /> : "Start"}
+              <Button 
+                type="submit" 
+                size="lg" 
+                className="h-14 bg-red-600 px-8 text-lg font-bold hover:bg-red-700" 
+                disabled={loading}
+                data-testid="button-download-youtube"
+              >
+                {loading ? <Loader2 className="animate-spin" /> : "Download"}
               </Button>
             </div>
           </div>
@@ -104,9 +113,10 @@ export default function YoutubePage() {
             title={result.title}
             thumbnail={result.thumbnail}
             author={result.author}
-            url={result.url}
+            duration={result.duration}
+            url={result.downloadUrl}
             type={format === 'mp3' ? 'audio' : 'video'}
-            onDownload={() => {}}
+            onDownload={() => window.open(result.downloadUrl, '_blank')}
           />
         )}
       </div>
