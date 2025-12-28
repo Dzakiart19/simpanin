@@ -20,7 +20,7 @@ export default function Home() {
             className="text-center"
         >
             <h1 className="mb-4 text-5xl font-extrabold tracking-tight text-white md:text-7xl" data-testid="heading-home">
-              Stream<span className="text-primary">Save</span>
+              Simpanin
             </h1>
             <p className="mb-12 text-xl text-gray-400 max-w-2xl mx-auto">
               The ultimate all-in-one media downloader. Simple, fast, and premium quality.
