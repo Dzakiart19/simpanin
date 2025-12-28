@@ -15,12 +15,20 @@ export default function SpotifyPage() {
 
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    if (!url) {
+      toast({
+        title: "Error",
+        description: "Silakan masukkan URL Spotify",
+        variant: "destructive",
+      });
+      return;
+    }
     setLoading(true);
     setResult(null);
 
     try {
       const response = await api.spotify(url);
+      console.log('Spotify Response:', response.data);
       
       if (response.data?.success && response.data?.data) {
         const data = response.data.data;
@@ -39,13 +47,14 @@ export default function SpotifyPage() {
           description: "Data lagu Spotify berhasil diambil",
         });
       } else {
-        throw new Error("Invalid response");
+        throw new Error("Response tidak valid");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('Spotify Error:', error);
+      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil lagu Spotify";
       toast({
         title: "Error",
-        description: "Gagal mengambil lagu Spotify. Periksa URL Anda.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -64,14 +73,14 @@ export default function SpotifyPage() {
           Spotify Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download musik dari Spotify dengan metadata lengkap.
+          Download musik dari Spotify dengan metadata lengkap (artis, cover, album).
         </p>
 
         <form onSubmit={handleDownload} className="relative w-full max-w-2xl">
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Paste Spotify URL di sini..." 
+              placeholder="Contoh: https://open.spotify.com/track/..." 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-green-500 focus:ring-green-500/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}

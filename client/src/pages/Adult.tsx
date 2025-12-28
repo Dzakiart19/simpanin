@@ -20,12 +20,21 @@ export default function AdultPage() {
 
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    if (!url) {
+      toast({
+        title: "Error",
+        description: "Silakan masukkan URL",
+        variant: "destructive",
+      });
+      return;
+    }
     setLoading(true);
     setResult(null);
 
     try {
       const response = await api.xnxx.download(url);
+      console.log('XNXX Response:', response.data);
+      
       if (response.data?.success && response.data?.data) {
         const data = response.data.data;
         setResult({
@@ -39,13 +48,14 @@ export default function AdultPage() {
           description: "Data video berhasil diambil",
         });
       } else {
-        throw new Error("Invalid response");
+        throw new Error("Response tidak valid");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('XNXX Error:', error);
+      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil video";
       toast({
         title: "Error",
-        description: "Gagal mengambil video. Periksa URL Anda.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -55,13 +65,22 @@ export default function AdultPage() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery) return;
+    if (!searchQuery) {
+      toast({
+        title: "Error",
+        description: "Silakan masukkan query pencarian",
+        variant: "destructive",
+      });
+      return;
+    }
     setLoading(true);
     setSearchResults([]);
     setSelectedResult(null);
 
     try {
       const response = await api.xnxx.search(searchQuery, 1);
+      console.log('XNXX Search Response:', response.data);
+      
       if (response.data?.success && response.data?.data && Array.isArray(response.data.data)) {
         setSearchResults(response.data.data);
         toast({
@@ -69,13 +88,14 @@ export default function AdultPage() {
           description: `Menemukan ${response.data.data.length} hasil`,
         });
       } else {
-        throw new Error("Invalid response");
+        throw new Error("Response tidak valid");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('XNXX Search Error:', error);
+      const errorMsg = error.response?.data?.message || error.message || "Pencarian gagal";
       toast({
         title: "Error",
-        description: "Pencarian gagal.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -103,7 +123,7 @@ export default function AdultPage() {
           18+ Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download video pribadi dan pencarian (XNXX, PornHub).
+          Download video pribadi dan pencarian (XNXX, PornHub) - Download dengan cepat dan aman.
         </p>
 
         <Tabs defaultValue="downloader" className="w-full max-w-2xl">
@@ -117,7 +137,7 @@ export default function AdultPage() {
               <div className="flex flex-col gap-4 md:flex-row">
                 <Input 
                   type="text" 
-                  placeholder="Paste URL (XNXX, PornHub)..." 
+                  placeholder="Contoh: https://www.xnxx.com/video-..." 
                   className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-yellow-500 focus:ring-yellow-500/50"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}

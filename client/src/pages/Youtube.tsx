@@ -17,7 +17,14 @@ export default function YoutubePage() {
 
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    if (!url) {
+      toast({
+        title: "Error",
+        description: "Silakan masukkan URL YouTube",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setLoading(true);
     setResult(null);
@@ -30,6 +37,8 @@ export default function YoutubePage() {
         response = await api.youtube.mp4(url);
       }
       
+      console.log('YouTube Response:', response.data);
+
       if (response.data?.success && response.data?.data) {
         const data = response.data.data;
         setResult({
@@ -44,14 +53,15 @@ export default function YoutubePage() {
           description: "Data video berhasil diambil",
         });
       } else {
-        throw new Error("Invalid response structure");
+        throw new Error("Response tidak valid");
       }
 
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('YouTube Error:', error);
+      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil data video";
       toast({
         title: "Error",
-        description: "Gagal mengambil data video. Periksa URL Anda.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -77,7 +87,7 @@ export default function YoutubePage() {
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Paste YouTube URL di sini..." 
+              placeholder="Contoh: https://youtu.be/dQw4w9WgXcQ" 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-red-600 focus:ring-red-600/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}

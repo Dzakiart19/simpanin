@@ -2,23 +2,68 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://api.gimita.id/api';
 
+// CORS proxy jika diperlukan
+const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+
 export interface DownloadResponse {
   status: boolean;
   message: string;
-  data: any; // Dynamic based on endpoint
+  data: any;
 }
+
+// Buat axios instance dengan timeout lebih lama
+const apiClient = axios.create({
+  timeout: 30000, // 30 detik timeout
+  headers: {
+    'Accept': 'application/json',
+  }
+});
+
+// Interceptor untuk error handling
+apiClient.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.message);
+    console.error('Error Details:', error.response?.data || error.message);
+    throw error;
+  }
+);
 
 export const api = {
   youtube: {
-    mp3: (url: string) => axios.get(`${API_BASE_URL}/downloader/ytmp3?url=${encodeURIComponent(url)}`),
-    mp4: (url: string, resolution: string = '720') => axios.get(`${API_BASE_URL}/downloader/ytmp4?url=${encodeURIComponent(url)}&resolution=${resolution}`),
-    info: (url: string) => axios.get(`${API_BASE_URL}/downloader/ytinfo?url=${encodeURIComponent(url)}`),
+    mp3: (url: string) => {
+      console.log('Fetching YouTube MP3:', url);
+      return apiClient.get(`${API_BASE_URL}/downloader/ytmp3?url=${encodeURIComponent(url)}`);
+    },
+    mp4: (url: string, resolution: string = '720') => {
+      console.log('Fetching YouTube MP4:', url, 'Resolution:', resolution);
+      return apiClient.get(`${API_BASE_URL}/downloader/ytmp4?url=${encodeURIComponent(url)}&resolution=${resolution}`);
+    },
+    info: (url: string) => {
+      console.log('Fetching YouTube Info:', url);
+      return apiClient.get(`${API_BASE_URL}/downloader/ytinfo?url=${encodeURIComponent(url)}`);
+    },
   },
-  tiktok: (url: string) => axios.get(`${API_BASE_URL}/downloader/tiktok?url=${encodeURIComponent(url)}`),
-  spotify: (url: string) => axios.get(`${API_BASE_URL}/downloader/spotify?url=${encodeURIComponent(url)}`),
+  tiktok: (url: string) => {
+    console.log('Fetching TikTok:', url);
+    return apiClient.get(`${API_BASE_URL}/downloader/tiktok?url=${encodeURIComponent(url)}`);
+  },
+  spotify: (url: string) => {
+    console.log('Fetching Spotify:', url);
+    return apiClient.get(`${API_BASE_URL}/downloader/spotify?url=${encodeURIComponent(url)}`);
+  },
   xnxx: {
-    download: (url: string) => axios.get(`${API_BASE_URL}/downloader/xnxx?url=${encodeURIComponent(url)}`),
-    search: (query: string, page: number = 1) => axios.get(`${API_BASE_URL}/search/xnxx?query=${encodeURIComponent(query)}&page=${page}`),
+    download: (url: string) => {
+      console.log('Fetching XNXX:', url);
+      return apiClient.get(`${API_BASE_URL}/downloader/xnxx?url=${encodeURIComponent(url)}`);
+    },
+    search: (query: string, page: number = 1) => {
+      console.log('Searching XNXX:', query, 'Page:', page);
+      return apiClient.get(`${API_BASE_URL}/search/xnxx?query=${encodeURIComponent(query)}&page=${page}`);
+    },
   },
-  pornhub: (url: string) => axios.get(`${API_BASE_URL}/downloader/pornhub?url=${encodeURIComponent(url)}`),
+  pornhub: (url: string) => {
+    console.log('Fetching PornHub:', url);
+    return apiClient.get(`${API_BASE_URL}/downloader/pornhub?url=${encodeURIComponent(url)}`);
+  },
 };

@@ -15,36 +15,47 @@ export default function TiktokPage() {
 
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
+    if (!url) {
+      toast({
+        title: "Error",
+        description: "Silakan masukkan URL TikTok",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
     setResult(null);
 
     try {
       const response = await api.tiktok(url);
+      console.log('TikTok Response:', response.data);
       
       if (response.data?.success && response.data?.data) {
         const data = response.data.data;
         const authorName = data.author?.name || "TikTok User";
+        const videoUrl = data.video?.hd || data.video?.sd || "";
         
         setResult({
           title: data.title || "TikTok Video",
           thumbnail: data.thumbnail || "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800&q=80",
           author: authorName,
           stats: data.stats || {},
-          downloadUrl: data.video?.url || "",
+          downloadUrl: videoUrl,
         });
         toast({
           title: "Berhasil",
           description: "Data video TikTok berhasil diambil",
         });
       } else {
-        throw new Error("Invalid response");
+        throw new Error("Response tidak valid: " + JSON.stringify(response.data));
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error('TikTok Error:', error);
+      const errorMsg = error.response?.data?.message || error.message || "Gagal mengambil video TikTok";
       toast({
         title: "Error",
-        description: "Gagal mengambil video TikTok. Periksa URL Anda.",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {
@@ -63,14 +74,14 @@ export default function TiktokPage() {
           TikTok Downloader
         </h1>
         <p className="mb-10 text-center text-lg text-gray-400">
-          Download video TikTok tanpa watermark.
+          Download video TikTok tanpa watermark dalam kualitas tinggi.
         </p>
 
         <form onSubmit={handleDownload} className="relative w-full max-w-2xl">
           <div className="flex flex-col gap-4 md:flex-row">
             <Input 
               type="text" 
-              placeholder="Paste TikTok URL di sini..." 
+              placeholder="Contoh: https://vt.tiktok.com/ZS5ds6PUw/" 
               className="h-14 border-white/10 bg-black/50 px-6 text-lg text-white backdrop-blur-md focus:border-pink-500 focus:ring-pink-500/50"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
