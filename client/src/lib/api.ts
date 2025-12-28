@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.gimita.id/api';
+// Use local backend instead of external API (resolve CORS)
+const API_BASE_URL = '/api';
 
 export interface DownloadResponse {
   status: boolean;
