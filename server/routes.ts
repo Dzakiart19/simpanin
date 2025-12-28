@@ -1,7 +1,8 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import axios from "axios";
+import { log } from "./index";
 
 const GIMITA_API = 'https://api.gimita.id/api';
 
@@ -12,15 +13,18 @@ export async function registerRoutes(
   // API Proxy routes untuk resolve CORS issue
   
   // YouTube routes
-  app.get('/api/downloader/ytmp3', async (req, res) => {
+  app.get('/api/downloader/ytmp3', async (req: Request, res: Response) => {
     try {
       const { url } = req.query;
+      log(`API Call: YouTube MP3 - ${url}`);
       const response = await axios.get(`${GIMITA_API}/downloader/ytmp3?url=${encodeURIComponent(String(url))}`, {
-        timeout: 60000
+        timeout: 60000,
+        headers: { 'Accept': 'application/json' }
       });
-      res.json(response.data);
+      return res.json(response.data);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      log(`API Error: YouTube MP3 - ${error.message}`);
+      return res.status(500).json({ error: error.message, success: false });
     }
   });
 
